@@ -9,9 +9,15 @@ import jdk.internal.org.objectweb.asm.tree.InnerClassNode;
  */
 public class Divide {
 
+    /**
+     * 递减除数,慢
+     * @param dividend
+     * @param divisor
+     * @return
+     */
     public static int divide(int dividend, int divisor) {
         // 结果值,初始为0
-        int result = 0;
+        int result;
 
         if (divisor == 0) {
             throw new ArithmeticException("/ by zero"); // 如果除数为0,抛出异常
@@ -29,9 +35,6 @@ public class Divide {
 
             return -dividend; // 除数为-1,返回被除数相反数
         }
-        if (dividend == divisor) {
-            return 1; // 被除数等于除数,返回1
-        }
 
         if (dividend > 0) {
             // 被除数是正数
@@ -39,46 +42,34 @@ public class Divide {
             if (divisor > 0) {
                 // 被除数,除数都大于0
 
-                if (dividend < divisor) {
-                    return 0; // 被除数小于除数,返回0
-                }
-
                 int sum = 0; // 存放累计和
-                for (int i = 0; ; i++) {
-                    sum += divisor;
-                    if (sum == dividend) {
-                        result = i+1;
-                        break;
+                for (int i = 1; ; i++) {
+                    // i表示除数累加的次数,从1开始,带符号
+
+                    sum += divisor; // 累加
+                    int diff = dividend - sum; // 累加和与被除数的差值
+                    if (diff < 0) {
+                        return i - 1; // 差小于0,需要返回上一次的次数
                     }
-                    if (sum > dividend) {
-                        result = i;
-                        break;
+                    if (diff < divisor) {
+                        return i; // 差值小于除数,返回累加的次数
                     }
                 }
 
             } else {
                 // 被除数大于0,除数小于0
 
-                if (divisor == Integer.MIN_VALUE) {
-                    return 0; // 除数是int最小值,直接返回0
-                }
+                int sum = 0; // 存放累加和
+                for (int i = -1; ; i--) {
+                    // i表示除数累加的次数,由于除数小于0,次数也要带符号,从-1开始
 
-                divisor = -divisor; // 将负数转换成正数
-                if (dividend < divisor) {
-                    return 0; // 被除数相反数大于除数
-                }
-
-                for (int i = 0; ; i++) {
-
-                    int sum = 0;
-                    int j = 0;
-                    for (; j < divisor; j++) {
-                        sum += i;
+                    sum -= divisor; // 除数小于0,需要变换符号
+                    int diff = dividend - sum;
+                    if (diff < 0) {
+                        return i - (-1); // 差值小于0,需要返回上一步的次数
                     }
-
-                    if (sum == dividend || ((sum < dividend) && ((sum + i) > dividend))) {
-                        result = -i;
-                        break;
+                    if (diff < -divisor) {
+                        return i; // 差值小于除数的相反数,返回累加的次数
                     }
                 }
 
@@ -90,48 +81,39 @@ public class Divide {
             if (divisor > 0) {
                 // 被除数是负数,除数是正数
 
-                if (dividend > -divisor) {
-                    return 0; // 除数的相反数小于被除数,返回0
-                }
+                int sum = 0;
+                for (int i = -1; ; i--) {
 
-                for (int i = 0; ; i--) {
-
-                    int sum = 0;
-                    int j = 0;
-                    for (; j < divisor; j++) {
-                        sum += i;
+                    sum += divisor; // 累加和
+                    int diff = dividend + sum;
+                    if (diff > 0) {
+                        result = i + 1;
+                        break;
                     }
-
-                    if (sum == dividend || ((sum > dividend) && ((sum + i) < dividend))) {
+                    if (-diff < divisor) {
                         result = i;
                         break;
                     }
+
                 }
 
             } else {
                 // 被除数是负数,除数是负数
 
-                if (divisor == Integer.MIN_VALUE) {
-                    return 0; // 除数为int最小值,返回0
-                }
-                if (dividend > dividend) {
-                    return 0; // 被除数大于除数,返回0
-                }
-
-                divisor = -divisor;
-                for (int i = 0; ; i--) {
-
-                    int sum = 0;
-                    int j = 0;
-                    for (; j < divisor; j++) {
-                        sum += i;
+                int sum = 0;
+                for (int i = 1; ; i++) {
+                    sum += divisor;
+                    int diff = dividend - sum;
+                    if (diff > 0) {
+                        result = i - 1;
+                        break;
                     }
-
-                    if (sum == dividend || ((sum > dividend) && ((sum + i) < dividend))) {
-                        result = -i; // 返回基数的绝对值
+                    if (diff > divisor) {
+                        result = i;
                         break;
                     }
                 }
+
             }
         }
 
