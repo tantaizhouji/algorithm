@@ -3,7 +3,7 @@ package com.yangqihang.sort;
 import java.util.Arrays;
 
 /**
- * 排序工具类
+ * 排序工具类,选择排序,冒泡排序,插入排序
  */
 public final class SortUtil {
     private SortUtil() {

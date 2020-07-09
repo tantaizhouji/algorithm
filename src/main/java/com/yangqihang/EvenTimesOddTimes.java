@@ -1,7 +1,19 @@
 package com.yangqihang;
 
-
 public class EvenTimesOddTimes {
+
+    /**
+     * 给定一个数组,只有一种数出现奇数次,求这种数
+     *
+     * @param arr
+     */
+    public static void printOddTimesNum(int[] arr) {
+        int eor = 0;
+        for (int i : arr) {
+            eor ^= i;
+        }
+        System.out.println(eor);
+    }
 
     /**
      * arr中,有两种数出现奇数次,求这两种数
